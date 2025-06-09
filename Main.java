@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<EmployeeWorkLog> employees = new ArrayList<>();
 
-        for (int i = 1; i <= 400; i++) {
+        for (int i = 1; i <= 100; i++) {
             String empid = ReadExcel("Sheet1", i, 0);
             String name = ReadExcel("Sheet1", i, 1);
             String dept = ReadExcel("Sheet1", i, 2);
@@ -44,6 +44,7 @@ public class Main {
 //        calling operation methods 
 //        Weekly Average hours employees month wise
         Map<String, Map<String, Double>> empAvgHours = opeOnEmp.employeeAverageWeeklyHours(employees);
+        
         int sheet2row = 0;
         WriteExcel("Sheet2", sheet2row, 0, "Emp ID");
         WriteExcel("Sheet2", sheet2row, 1, "Month");
@@ -61,6 +62,8 @@ public class Main {
         }
 
 //        Top 5 emolyees with heighest hours in last 60 days
+        List<EmployeeWorkLog> empList = opeOnEmp.heighestHoursWorkedEmps(employees);
+        
         int sheet3row = 0;
         WriteExcel("Sheet3", sheet3row++, 0, "Top 5 Employees (in the Last 60 Days)");
         WriteExcel("Sheet3", sheet3row, 0, "Emp ID");
@@ -68,7 +71,6 @@ public class Main {
         WriteExcel("Sheet3", sheet3row, 2, "Hours");
         sheet3row++;
 
-        List<EmployeeWorkLog> empList = opeOnEmp.heighestHoursWorkedEmps(employees);
         for (EmployeeWorkLog emp : empList) {
             WriteExcel("Sheet3", sheet3row, 0, emp.getEmployeeId());
             WriteExcel("Sheet3", sheet3row, 1, emp.getName());
@@ -77,13 +79,14 @@ public class Main {
         }
         
 //        Critical projects : > 2 employees and morethan 20 + hours
+        List<List<String>> criticalProjects = opeOnEmp.criticalProjects(employees);
+        
         int sheet4row = 0;
         WriteExcel("Sheet4", sheet4row++, 0, "Critical Projects (More than 2 Employees & 20+ Total Hours)");
         WriteExcel("Sheet4", sheet4row, 0, "Project");
         WriteExcel("Sheet4", sheet4row, 1, "Employees");
         WriteExcel("Sheet4", sheet4row++, 2, "Total Hours");
         
-        List<List<String>> criticalProjects = opeOnEmp.criticalProjects(employees);
         for (List<String> proj : criticalProjects) {
             int col = 0;
             for (String val : proj) {
@@ -93,11 +96,30 @@ public class Main {
         }
         
 //        Sorted Employess Dept -> Project -> Date
-        int sheet5row = 0;
-        WriteExcel("Sheet5", sheet5row++, 0, "Sorted Employee Logs by Dept → Project → Date");
+        
         List<String> sortedEmployeeLogs = opeOnEmp.sortByDeptProjectDate(employees);
+
+        int sheet5row = 0;
+        WriteExcel("Sheet5", sheet5row, 0, "Sorted Employee Logs by Dept → Project → Date");
+        sheet5row++;
+
+        WriteExcel("Sheet5", sheet5row, 0, "Emp ID");
+        WriteExcel("Sheet5", sheet5row, 1, "Name");
+        WriteExcel("Sheet5", sheet5row, 2, "Department");
+        WriteExcel("Sheet5", sheet5row, 3, "Project ID");
+        WriteExcel("Sheet5", sheet5row, 4, "Date");
+        WriteExcel("Sheet5", sheet5row, 5, "Task Category");
+        WriteExcel("Sheet5", sheet5row, 6, "Hours Worked");
+        WriteExcel("Sheet5", sheet5row, 7, "Remarks");
+        sheet5row++;
+
         for (String line : sortedEmployeeLogs) {
-            WriteExcel("Shee5", sheet5row++, 0, line);
+        	
+            String[] parts = line.trim().split("\\s{2,}");
+            for (int column = 0; column < parts.length && column < 8; column++) {
+                WriteExcel("Sheet5", sheet5row, column, parts[column]);
+            }
+            sheet5row++;
         }
 
 
